@@ -1,0 +1,61 @@
+import java.io.*;
+import java.util.*;
+import java.time.*;
+
+public class FloydsAlgorithn {
+
+    public static void main(String[] args) {
+        int n;
+        float[][] D;
+
+        try (Scanner scanner = new Scanner(new File("input.txt"))) {
+            List<List<Float>> matrix = new ArrayList<>();
+            while (scanner.hasNextLine()) {
+                List<Float> row = new ArrayList<>();
+                Scanner lineScanner = new Scanner(scanner.nextLine());
+                while (lineScanner.hasNextFloat()) {
+                    row.add(lineScanner.nextFloat());
+                }
+                matrix.add(row);
+            }
+            n = matrix.size();
+            D = new float[n][n];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    D[i][j] = matrix.get(i).get(j);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading input file.");
+            return;
+        }
+
+        Instant start = Instant.now();
+
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (D[i][k] + D[k][j] < D[i][j]) {
+                        D[i][j] = D[i][k] + D[k][j];
+                    }
+                }
+            }
+        }
+
+        Instant end = Instant.now();
+        long timeElapsed = Duration.between(start, end).toNanos();
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter("output.txt"))) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    writer.print(D[i][j] + " ");
+                }
+                writer.println();
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing output file.");
+        }
+
+        System.out.println("Execution time (nanoseconds): " + timeElapsed);
+    }
+}
